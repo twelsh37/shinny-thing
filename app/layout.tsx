@@ -12,9 +12,29 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteName = "European Cars";
+const description =
+  "Explore European car manufacturers — Germany, UK, Italy, and France.";
+
 export const metadata: Metadata = {
-  title: "European Cars",
-  description: "Explore European car manufacturers — Germany, UK, Italy, and France.",
+  title: { default: siteName, template: `%s | ${siteName}` },
+  description,
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com"
+  ),
+  openGraph: {
+    title: siteName,
+    description,
+    type: "website",
+    siteName,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteName,
+    description,
+  },
+  alternates: { canonical: "/" },
+  icons: { icon: "/favicon.ico" },
 };
 
 export default function RootLayout({
