@@ -13,9 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "About us | Studio Certain",
-  description:
-    "Good people. Great ideas. Who we are is defined by our people.",
+  title: "European Cars",
+  description: "Explore European car manufacturers — Germany, UK, Italy, and France.",
 };
 
 export default function RootLayout({
