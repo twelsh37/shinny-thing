@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 type DetailItem = {
   name: string;
   role: string;
@@ -31,10 +33,13 @@ export function TeamDetailPanel({ member, imageIsLogo = false }: Props) {
             className={`relative size-48 overflow-hidden rounded-sm bg-muted md:size-64 ${imageIsLogo ? "p-4" : ""}`}
           >
             {member.image ? (
-              <img
+              <Image
                 src={member.image}
                 alt={`${member.name} logo`}
-                className={`size-full ${imageIsLogo ? "object-contain" : "object-cover"}`}
+                fill
+                sizes="(max-width: 768px) 192px, 256px"
+                className={imageIsLogo ? "object-contain" : "object-cover"}
+                unoptimized={member.image.endsWith(".svg")}
               />
             ) : (
               <div className="flex size-full items-center justify-center text-4xl font-semibold text-muted-foreground md:text-5xl">
