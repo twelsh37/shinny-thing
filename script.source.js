@@ -1,0 +1,177 @@
+(function () {
+  var MANUFACTURERS = [
+    { name: "Volkswagen", role: "Germany", bio: "Volkswagen is one of the world's leading automobile manufacturers and the largest carmaker in Europe. Founded in 1937, the brand is known for the Beetle, Golf, and Polo, and has expanded into a global group including Audi, Porsche, and others. Volkswagen emphasizes engineering, reliability, and broad appeal across mass-market and premium segments.", image: "https://upload.wikimedia.org/wikipedia/commons/6/6d/Volkswagen_logo_2019.svg", website: "https://www.volkswagen.com" },
+    { name: "Audi", role: "Germany", bio: "Audi is a German luxury automotive manufacturer known for 'Vorsprung durch Technik' (Advancement through Technology). Part of the Volkswagen Group, Audi produces premium sedans, SUVs, and sportbacks, with a strong focus on quattro all-wheel drive, design, and innovation in lighting and digital interiors.", image: "https://upload.wikimedia.org/wikipedia/commons/9/92/Audi-Logo_2016.svg", website: "https://www.audi.com" },
+    { name: "Porsche", role: "Germany", bio: "Porsche is a German sports and luxury car manufacturer founded in 1931. Famous for the 911, Cayenne, and Taycan, Porsche combines performance, craftsmanship, and motorsport heritage. The brand is part of the Volkswagen Group and is synonymous with precision engineering and driving excellence.", image: "assets/porsche.svg", website: "https://www.porsche.com" },
+    { name: "Jaguar", role: "UK", bio: "Jaguar is a British luxury car brand known for elegant design and dynamic performance. Founded in 1935, it has produced iconic models such as the E-Type and XJ. Now under JLR (Jaguar Land Rover), Jaguar focuses on sedans and SUVs that blend refinement with sporty character.", image: "assets/jaguar.svg", website: "https://www.jaguar.com" },
+    { name: "Land Rover", role: "UK", bio: "Land Rover is a British brand specializing in premium off-road and luxury SUVs. Since 1948 it has been synonymous with capability and adventure, from the original Series to the Range Rover, Defender, and Discovery. Part of JLR, Land Rover combines ruggedness with luxury and advanced technology.", image: "assets/landrover.svg", website: "https://www.landrover.com" },
+    { name: "Aston Martin", role: "UK", bio: "Aston Martin is a British luxury and high-performance car manufacturer with a rich heritage in motorsport and film. Known for the DB series and the Vantage, Aston Martin builds handcrafted sports cars and grand tourers that blend power, style, and exclusivity.", image: "assets/aston-martin.svg", website: "https://www.astonmartin.com" },
+    { name: "Ferrari", role: "Italy", bio: "Ferrari is an Italian luxury sports car manufacturer and one of the most iconic brands in automotive history. Founded by Enzo Ferrari, the company is celebrated for Formula 1 success and road cars that deliver extreme performance, sound, and design. Ferrari represents the pinnacle of Italian automotive passion.", image: "assets/ferrari.svg", website: "https://www.ferrari.com" },
+    { name: "Maserati", role: "Italy", bio: "Maserati is an Italian luxury car manufacturer known for performance, style, and a distinctive engine note. Part of Stellantis, Maserati produces the Gran Turismo,Ghibli, Quattroporte, Levante, and MC20, combining Italian flair with grand touring comfort and sporting character.", image: "assets/maserati.png", website: "https://www.maserati.com" },
+    { name: "Renault", role: "France", bio: "Renault is a French multinational vehicle manufacturer with a history dating back to 1899. Known for innovation and accessible design, Renault produces cars from the compact Clio to the electric Mégane E-Tech and the Alpine sports brand. It is a key player in the Renault-Nissan-Mitsubishi alliance.", image: "assets/renault.svg", website: "https://www.renault.com" },
+    { name: "Peugeot", role: "France", bio: "Peugeot is a French car brand and one of the oldest in the world, established in 1810. Part of Stellantis, Peugeot is known for the 208, 308, 3008, and 508, combining sharp design with efficient engines and competitive value. The brand emphasizes style, comfort, and everyday usability.", image: "assets/peugeot.png", website: "https://www.peugeot.com" }
+  ];
+
+  var ARC_START = -70, ARC_END = 70, DURATION_MS = 500;
+  var hubX = -80, hubY = 200, radius = 150;
+
+  function round2(n) {
+    return Math.round(n * 100) / 100;
+  }
+
+  function getTargetAngles(activeIndex, n) {
+    if (n <= 0) return [];
+    if (n === 1) return [0];
+    var totalArc = ARC_END - ARC_START;
+    var othersCount = n - 1;
+    var halfArc = totalArc / 2;
+    var leftCount = Math.floor(othersCount / 2);
+    var rightCount = othersCount - leftCount;
+    var leftStep = leftCount > 0 ? halfArc / leftCount : 0;
+    var rightStep = rightCount > 0 ? halfArc / rightCount : 0;
+    var targets = new Array(n);
+    targets[activeIndex] = 0;
+    for (var i = 1; i <= leftCount; i++) {
+      var idx = (activeIndex - i + n) % n;
+      targets[idx] = round2(-i * leftStep);
+    }
+    for (var i = 1; i <= rightCount; i++) {
+      var idx = (activeIndex + i) % n;
+      targets[idx] = round2(i * rightStep);
+    }
+    return targets;
+  }
+
+  function easeOutQuad(t) {
+    return 1 - (1 - t) * (1 - t);
+  }
+
+  var activeIndex = 0;
+  var displayAngles = getTargetAngles(0, MANUFACTURERS.length);
+  var animId = null;
+  var startAngles = [];
+
+  var svgEl = document.getElementById("radial-svg");
+
+  function renderSpokes() {
+    var frag = document.createDocumentFragment();
+    for (var i = 0; i < MANUFACTURERS.length; i++) {
+      var angleDeg = displayAngles[i] || 0;
+      var angleRad = angleDeg * Math.PI / 180;
+      var x = round2(hubX + radius * Math.cos(angleRad));
+      var y = round2(hubY + radius * Math.sin(angleRad));
+      var m = MANUFACTURERS[i];
+      var isActive = i === activeIndex;
+      var nameFill = isActive ? "#0d9488" : "#374151";
+      var roleFill = isActive ? "#374151" : "#6b7280";
+
+      var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      g.setAttribute("transform", "translate(" + round2(x) + "," + round2(y) + ") rotate(" + round2(angleDeg) + ")");
+      g.setAttribute("class", "spoke");
+      g.setAttribute("role", "button");
+      g.setAttribute("tabindex", "0");
+      g.setAttribute("aria-label", m.name + " - " + m.role);
+      (function (idx) {
+        g.addEventListener("click", function () { selectIndex(idx); });
+        g.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            selectIndex(idx);
+          }
+        });
+      })(i);
+
+      var hit = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      hit.setAttribute("x", -8);
+      hit.setAttribute("y", -10);
+      hit.setAttribute("width", 320);
+      hit.setAttribute("height", 28);
+      hit.setAttribute("fill", "transparent");
+      g.appendChild(hit);
+
+      var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.setAttribute("x", 0);
+      text.setAttribute("y", 0);
+      text.setAttribute("text-anchor", "start");
+      var t1 = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+      t1.setAttribute("font-weight", isActive ? 600 : 500);
+      t1.setAttribute("fill", nameFill);
+      t1.textContent = m.name;
+      var t2 = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+      t2.setAttribute("fill", roleFill);
+      t2.setAttribute("font-weight", 500);
+      t2.textContent = " - " + m.role;
+      text.appendChild(t1);
+      text.appendChild(t2);
+      g.appendChild(text);
+
+      frag.appendChild(g);
+    }
+    svgEl.innerHTML = "";
+    svgEl.appendChild(frag);
+  }
+
+  function selectIndex(idx) {
+    if (idx === activeIndex) return;
+    var n = MANUFACTURERS.length;
+    var targetAngles = getTargetAngles(idx, n);
+    startAngles = displayAngles.slice();
+
+    if (animId) cancelAnimationFrame(animId);
+    var startTime = performance.now();
+
+    function tick(now) {
+      var elapsed = now - startTime;
+      var t = Math.min(elapsed / DURATION_MS, 1);
+      var eased = easeOutQuad(t);
+      for (var i = 0; i < n; i++) {
+        var start = startAngles[i];
+        var target = targetAngles[i];
+        var delta = target - start;
+        if (delta > 180) delta -= 360;
+        if (delta < -180) delta += 360;
+        displayAngles[i] = round2(start + delta * eased);
+      }
+      renderSpokes();
+      if (t < 1) animId = requestAnimationFrame(tick);
+    }
+    activeIndex = idx;
+    animId = requestAnimationFrame(tick);
+    updateDetail();
+  }
+
+  function updateDetail() {
+    var m = MANUFACTURERS[activeIndex];
+    document.getElementById("detail-name").textContent = m.name;
+    document.getElementById("detail-role").textContent = m.role;
+    document.getElementById("detail-bio").textContent = m.bio;
+
+    var img = document.getElementById("detail-image");
+    var init = document.getElementById("detail-initials");
+    if (m.image) {
+      img.src = m.image;
+      img.alt = m.name + " logo";
+      img.hidden = false;
+      init.hidden = true;
+    } else {
+      img.hidden = true;
+      init.hidden = false;
+      init.textContent = m.name.split(" ").map(function (w) { return w[0]; }).join("");
+    }
+
+    var linksEl = document.getElementById("detail-links");
+    linksEl.innerHTML = "";
+    if (m.website) {
+      var a = document.createElement("a");
+      a.href = m.website;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = "Website";
+      linksEl.appendChild(a);
+    }
+  }
+
+  displayAngles = getTargetAngles(0, MANUFACTURERS.length);
+  renderSpokes();
+  updateDetail();
+})();

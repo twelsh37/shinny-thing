@@ -4,9 +4,9 @@ Two ways to run the same European Cars experience: a **Next.js app** and a **pla
 
 # Why do this?
 
-The goal is to create a simple, responsive, and accessible European Cars experience that can be used as a template for other projects. The goal was to see if I could create the same layout using HTML 5 (Index.html (12k) & styles.css (2k)) and a Next.js app using react compnents etc. (972k without any modules loaded). WHen you install the modules the footprint takes up 508Mb. 
+The goal is to create a simple, responsive, and accessible European Cars experience that can be used as a template for other projects. The goal was to see if I could create the same layout using HTML 5 (Index.html (12k) & styles.css (2k)) and javascripy as opposed to Next.js app using react compnents etc. (972k without any modules loaded). WHen you install the modules the footprint takes up 508Mb. 
 
-Thats quite a difference from pure HTML 5 and CSS.
+Thats quite a difference from pure HTML 5 and JavaScript.
 
 ## What’s different about this version?
 
@@ -17,8 +17,20 @@ Thats quite a difference from pure HTML 5 and CSS.
 ## What’s included
 
 - **Next.js app** – `app/`, `components/`, `data/`, full stack. Run with `npm run dev` (or `npm run build` then `npm start`).
-- **HTML5 version** – **index.html** – single file with inline CSS and vanilla JavaScript (no frameworks or modules). Open in a browser or serve statically.
+- **HTML5 version** – **index.html** – single file with **styles.css** and obfuscated inline JavaScript (no frameworks or modules). The script is obfuscated so view-source shows unreadable code; behavior is unchanged. Open in a browser or serve statically.
 - **assets/** – Brand logos (SVG/PNG) used by the HTML5 detail panel. The Next.js app uses **public/** for logos.
+
+### Editing and rebuilding the HTML5 version
+
+The shipped **index.html** contains obfuscated JavaScript. To change behavior or content:
+
+1. Edit the **readable source**: **script.source.js** (manufacturers data, radial nav logic, detail panel updates).
+2. Optionally edit **index.template.html** if you need to change the HTML structure.
+3. Rebuild **index.html** with obfuscated script:
+   ```bash
+   npm run build:html5
+   ```
+   This runs **build-html5.js**, which obfuscates `script.source.js` and injects it into `index.template.html`, then writes `index.html`. No need to edit the obfuscated code by hand.
 
 ## How to run
 
