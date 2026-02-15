@@ -6,6 +6,20 @@ export type Manufacturer = {
   website?: string;
 };
 
+/** URL slug for a manufacturer name (e.g. "Aston Martin" -> "aston-martin"). */
+export function manufacturerSlug(name: string): string {
+  return name.toLowerCase().replace(/\s+/g, "-");
+}
+
+/** Index in MANUFACTURERS for a given slug, or 0 if not found. */
+export function getIndexBySlug(slug: string | null): number {
+  if (!slug) return 0;
+  const index = MANUFACTURERS.findIndex(
+    (m) => manufacturerSlug(m.name) === slug.toLowerCase()
+  );
+  return index >= 0 ? index : 0;
+}
+
 export const MANUFACTURERS: Manufacturer[] = [
   {
     name: "Volkswagen",
@@ -59,7 +73,7 @@ export const MANUFACTURERS: Manufacturer[] = [
   {
     name: "Maserati",
     role: "Italy",
-    bio: "Maserati is an Italian luxury car manufacturer known for performance, style, and a distinctive engine note. Part of Stellantis, Maserati produces the Ghibli, Quattroporte, Levante, and MC20, combining Italian flair with grand touring comfort and sporting character.",
+    bio: "Maserati is an Italian luxury car manufacturer known for performance, style, and a distinctive engine note. Part of Stellantis, Maserati produces the Gran Turismo, Ghibli, Quattroporte, Levante, and MC20, combining Italian flair with grand touring comfort and sporting character.",
     image: "/maserati.png",
     website: "https://www.maserati.com",
   },
