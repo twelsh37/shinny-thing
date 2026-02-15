@@ -1,36 +1,27 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# European Cars
 
-## Getting Started
+Two ways to run the same European Cars experience: a **Next.js app** and a **plain HTML5** version for comparison.
 
-First, run the development server:
+## What’s included
+
+- **Next.js app** – `app/`, `components/`, `data/`, full stack. Run with `npm run dev` (or `npm run build` then `npm start`).
+- **HTML5 version** – **index.html** – single file with inline CSS and vanilla JavaScript (no frameworks or modules). Open in a browser or serve statically.
+- **assets/** – Brand logos (SVG/PNG) used by the HTML5 detail panel. The Next.js app uses **public/** for logos.
+
+## How to run
+
+### Next.js app
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### HTML5 index.html
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Open in browser:** Open `index.html` from the project folder (file://), or  
+- **Local server:** `npx serve .` or `python -m http.server 8080` then open the URL shown.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+No Node dependencies are required to use the HTML5 version; the Next.js app needs `npm install` and the packages in `package.json`.
