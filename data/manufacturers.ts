@@ -24,7 +24,7 @@ export const MANUFACTURERS: Manufacturer[] = [
   {
     name: "Volkswagen",
     role: "Germany",
-    bio: "Volkswagen is one of the world's leading automobile manufacturers and the largest carmaker in Europe. Founded in 1937, the brand is known for the Beetle, Golf, and Polo, and has expanded into a global group including Audi, Porsche, and others. Volkswagen emphasizes engineering, reliability, and broad appeal across mass-market and premium segments.",
+    bio: "Volkswagen is one of the world's leading carmakers and the largest in Europe. Founded in 1937, the brand is known for the Beetle, Golf, and Polo, and has grown into a global group including Audi and Porsche. The brand emphasizes engineering, reliability, and broad appeal across mass-market and premium segments.",
     image: "https://upload.wikimedia.org/wikipedia/commons/6/6d/Volkswagen_logo_2019.svg",
     website: "https://www.volkswagen.com",
   },
