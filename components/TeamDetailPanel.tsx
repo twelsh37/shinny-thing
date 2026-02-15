@@ -21,28 +21,30 @@ type Props = {
 
 export function TeamDetailPanel({ member, imageIsLogo = false }: Props) {
   return (
-    <div className="flex h-full flex-col overflow-auto bg-background p-8 md:p-12">
-      <h1 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
+    <div className="flex h-full flex-col overflow-auto bg-background p-4 sm:p-6 md:p-8 lg:p-12">
+      <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl md:text-4xl">
         {member.name}
       </h1>
-      <p className="mt-1 text-lg text-muted-foreground">{member.role}</p>
+      <p className="mt-1 text-base text-muted-foreground sm:text-lg">
+        {member.role}
+      </p>
 
-      <div className="mt-10 flex flex-col gap-8 md:flex-row md:gap-12">
+      <div className="mt-6 flex flex-col gap-6 sm:mt-8 sm:gap-8 md:flex-row md:gap-12 md:mt-10">
         <div className="relative shrink-0">
           <div
-            className={`relative size-48 overflow-hidden rounded-sm bg-muted md:size-64 ${imageIsLogo ? "p-4" : ""}`}
+            className={`relative size-40 overflow-hidden rounded-sm bg-muted sm:size-48 md:size-64 ${imageIsLogo ? "p-4" : ""}`}
           >
             {member.image ? (
               <Image
                 src={member.image}
                 alt={`${member.name} logo`}
                 fill
-                sizes="(max-width: 768px) 192px, 256px"
+                sizes="(max-width: 640px) 160px, (max-width: 768px) 192px, 256px"
                 className={imageIsLogo ? "object-contain" : "object-cover"}
                 unoptimized={member.image.endsWith(".svg")}
               />
             ) : (
-              <div className="flex size-full items-center justify-center text-4xl font-semibold text-muted-foreground md:text-5xl">
+              <div className="flex size-full items-center justify-center text-3xl font-semibold text-muted-foreground sm:text-4xl md:text-5xl">
                 {member.name
                   .split(" ")
                   .map((n) => n[0])
@@ -65,17 +67,17 @@ export function TeamDetailPanel({ member, imageIsLogo = false }: Props) {
         </div>
         <div className="min-w-0 flex-1">
           <div className="prose prose-neutral max-w-none dark:prose-invert">
-            <p className="text-base leading-relaxed text-foreground md:text-lg">
+            <p className="text-[15px] leading-relaxed text-foreground sm:text-base md:text-lg">
               {member.bio}
             </p>
           </div>
-          <div className="mt-6 flex flex-wrap gap-4">
+          <div className="mt-4 flex flex-wrap gap-2 sm:mt-6 sm:gap-4">
             {member.website && (
               <a
                 href={member.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground"
+                className="inline-flex min-h-[44px] items-center py-3 text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground"
               >
                 Website
               </a>
@@ -85,7 +87,7 @@ export function TeamDetailPanel({ member, imageIsLogo = false }: Props) {
                 href={member.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground"
+                className="inline-flex min-h-[44px] items-center py-3 text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground"
               >
                 LinkedIn
               </a>
@@ -95,7 +97,7 @@ export function TeamDetailPanel({ member, imageIsLogo = false }: Props) {
                 href={member.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground"
+                className="inline-flex min-h-[44px] items-center py-3 text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground"
               >
                 Instagram
               </a>
@@ -103,7 +105,7 @@ export function TeamDetailPanel({ member, imageIsLogo = false }: Props) {
             {member.email && (
               <a
                 href={member.email}
-                className="text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground"
+                className="inline-flex min-h-[44px] items-center py-3 text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground"
               >
                 Email
               </a>

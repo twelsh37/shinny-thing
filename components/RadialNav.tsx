@@ -1,18 +1,21 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useSyncExternalStore, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 function usePrefersReducedMotion(): boolean {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReducedMotion(mq.matches);
-    const listener = () => setPrefersReducedMotion(mq.matches);
-    mq.addEventListener("change", listener);
-    return () => mq.removeEventListener("change", listener);
-  }, []);
-  return prefersReducedMotion;
+  return useSyncExternalStore(
+    (onStoreChange) => {
+      const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+      mq.addEventListener("change", onStoreChange);
+      return () => mq.removeEventListener("change", onStoreChange);
+    },
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    () => false
+  );
 }
+
+/** Container width breakpoint below which we use compact (zoomed) viewBox and larger text. */
+const COMPACT_BREAKPOINT = 480;
 
 export type TeamItem = { name: string; role: string };
 
@@ -74,6 +77,22 @@ function getTargetAngles(activeIndex: number, n: number): number[] {
 export function RadialNav({ items, activeIndex, onSelect }: Props) {
   const n = items.length;
   const prefersReducedMotion = usePrefersReducedMotion();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(400);
+
+  useLayoutEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      const { width } = entries[0]?.contentRect ?? { width: 400 };
+      setContainerWidth(width);
+    });
+    ro.observe(el);
+    setContainerWidth(el.getBoundingClientRect().width);
+    return () => ro.disconnect();
+  }, []);
+
+  const compact = containerWidth < COMPACT_BREAKPOINT;
   const { hubX, hubY, radius } = useMemo(
     () => ({ hubX: -80, hubY: 200, radius: 150 }),
     []
@@ -112,7 +131,7 @@ export function RadialNav({ items, activeIndex, onSelect }: Props) {
       const t = Math.min(elapsed / durationMs, 1);
       const eased = EASING(t);
 
-      const next = displayAngles.map((_, i) => {
+      const next = displayAngles.map((_: number, i: number) => {
         const start = startAnglesRef.current[i] ?? targetAngles[i];
         const target = targetAngles[i];
         let delta = target - start;
@@ -133,16 +152,20 @@ export function RadialNav({ items, activeIndex, onSelect }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeIndex, n, durationMs]);
 
-  const viewBox = useMemo(() => `-140 -40 560 480`, []);
+  const viewBox = compact
+    ? "-230 59 300 282"
+    : "-140 -40 560 480";
 
   return (
     <nav
+      ref={containerRef}
       className="flex h-full w-full items-center justify-center"
       aria-label="Team navigation"
     >
       <svg
         viewBox={viewBox}
         className="h-full w-full overflow-visible"
+        preserveAspectRatio="xMidYMid meet"
         aria-hidden
       >
         {items.map((item, index) => {
@@ -171,9 +194,9 @@ export function RadialNav({ items, activeIndex, onSelect }: Props) {
             >
               <rect
                 x={-8}
-                y={-10}
+                y={-22}
                 width={320}
-                height={28}
+                height={44}
                 fill="transparent"
                 aria-hidden
               />
@@ -181,8 +204,11 @@ export function RadialNav({ items, activeIndex, onSelect }: Props) {
                 x={0}
                 y={0}
                 textAnchor="start"
-                style={{ fontFamily: "var(--font-geist-sans), sans-serif" }}
-                className="select-none text-[13px] tracking-tight"
+                style={{
+                  fontFamily: "var(--font-geist-sans), sans-serif",
+                  fontSize: compact ? "1.125rem" : undefined,
+                }}
+                className="select-none text-base tracking-tight md:text-[14px]"
               >
                 <tspan fontWeight={isActive ? 600 : 500} fill={nameFill}>
                   {item.name}
