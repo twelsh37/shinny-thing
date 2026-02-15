@@ -12,6 +12,7 @@ export default function Error({
 }) {
   useEffect(() => {
     console.error(error);
+    // Optional: send to error reporting (e.g. Sentry) when NEXT_PUBLIC_SENTRY_DSN is set
   }, [error]);
 
   return (
