@@ -2,6 +2,18 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
+function usePrefersReducedMotion(): boolean {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReducedMotion(mq.matches);
+    const listener = () => setPrefersReducedMotion(mq.matches);
+    mq.addEventListener("change", listener);
+    return () => mq.removeEventListener("change", listener);
+  }, []);
+  return prefersReducedMotion;
+}
+
 export type TeamItem = { name: string; role: string };
 
 /** Round to fixed decimals so server and client produce identical transform strings (avoids hydration mismatch). */
@@ -61,6 +73,7 @@ function getTargetAngles(activeIndex: number, n: number): number[] {
  */
 export function RadialNav({ items, activeIndex, onSelect }: Props) {
   const n = items.length;
+  const prefersReducedMotion = usePrefersReducedMotion();
   const { hubX, hubY, radius } = useMemo(
     () => ({ hubX: -80, hubY: 200, radius: 150 }),
     []
@@ -78,8 +91,15 @@ export function RadialNav({ items, activeIndex, onSelect }: Props) {
   const animRef = useRef<number | null>(null);
   const startAnglesRef = useRef<number[]>([]);
 
+  const durationMs = prefersReducedMotion ? 0 : DURATION_MS;
+
   useEffect(() => {
     if (n === 0) return;
+
+    if (durationMs === 0) {
+      setDisplayAngles(targetAngles);
+      return;
+    }
 
     startAnglesRef.current = [...displayAngles];
 
@@ -89,7 +109,7 @@ export function RadialNav({ items, activeIndex, onSelect }: Props) {
 
     const tick = (now: number) => {
       const elapsed = now - startTime;
-      const t = Math.min(elapsed / DURATION_MS, 1);
+      const t = Math.min(elapsed / durationMs, 1);
       const eased = EASING(t);
 
       const next = displayAngles.map((_, i) => {
@@ -109,9 +129,9 @@ export function RadialNav({ items, activeIndex, onSelect }: Props) {
     return () => {
       if (animRef.current !== null) cancelAnimationFrame(animRef.current);
     };
-    // Only run when target angles (active index) change
+    // Only run when target angles (active index) or duration change
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeIndex, n]);
+  }, [activeIndex, n, durationMs]);
 
   const viewBox = useMemo(() => `-140 -40 560 480`, []);
 
